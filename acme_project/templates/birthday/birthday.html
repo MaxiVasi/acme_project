@@ -8,19 +8,21 @@
       Калькулятор ожидания дня рождения
     </div>
   <div class="card-body">
-  <form>
-    <!-- Защита -->
-    {% csrf_token %} 
+  <form method="post">
+    <!-- Добавьте тег csrf_token. Без него POST-запрос будет отклонён. -->
+    {% csrf_token %}
     <!-- Выводим поля формы с помощью специального тега. -->
     {% bootstrap_form form %}
     <!-- Добавляем кнопку отправки данных. -->
     {% bootstrap_button button_type="submit" content="Отправить" %}
   </form>
-  
-  <!-- Присваиваем переменной data объект request.GET -->
-  {% with data=request.GET %}
+  <!-- Присваиваем переменной data объект request.GET или POST -->
+  <!-- После сохранения в БД через form новый обьект доступен в шаблоне по form.instance  -->
+  {% with data=form.instance %}
     <!-- В дальнейшем используем имя data вместо request.GET -->
     {% if form.is_valid %}
+      ID новой записи в БД: {{ data.id }}
+      <hr>
       <h2>Привет, {{ data.first_name }} {{ data.last_name }}</h2>
       {% if birthday_countdown == 0 %}
       <!-- ...выводим поздравление: -->
@@ -31,7 +33,6 @@
       Осталось дней до дня рождения: {{ birthday_countdown }}!
       {% endif %}
     {% endif %}
-  <!-- Когда заканчивается область шаблона, где нужна переменная, 
-    закрываем тег with -->
+  <!-- Когда заканчивается область шаблона, где нужна переменная, закрываем тег with -->
   {% endwith %}
 {% endblock %}
