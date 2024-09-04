@@ -14,9 +14,13 @@ from django.urls import reverse_lazy
 # Создаём миксин.
 class BirthdayMixin:
     model = Birthday
+    success_url = reverse_lazy('birthday:list')
+
+
+# Создаём миксин.
+class BirthdayFormMixin:
     form_class = BirthdayForm
     template_name = 'birthday/birthday.html'
-    success_url = reverse_lazy('birthday:list')
 
 
 # Наследуем класс от встроенного ListView - Это CBV заменяет def birthday_list:
@@ -30,20 +34,18 @@ class BirthdayListView(ListView):
 
 
 # Добавляем миксин первым по списку родительских классов.
-class BirthdayCreateView(BirthdayMixin, CreateView):
-    # Не нужно описывать атрибуты: все они унаследованы от BirthdayMixin.
+class BirthdayCreateView(BirthdayMixin, BirthdayFormMixin, CreateView):
     pass
 
 
 # Добавляем миксин первым по списку родительских классов.
-class BirthdayUpdateView(BirthdayMixin, UpdateView):
-    # И здесь все атрибуты наследуются от BirthdayMixin.
+class BirthdayUpdateView(BirthdayMixin, BirthdayFormMixin, UpdateView):
     pass
 
 
-class BirthdayDeleteView(DeleteView):
-    model = Birthday
-    success_url = reverse_lazy('birthday:list')
+class BirthdayDeleteView(BirthdayMixin, DeleteView):
+    pass
+
 
 # Создан класс MIXIN.
 # class BirthdayCreateView(CreateView):
