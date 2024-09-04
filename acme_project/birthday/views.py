@@ -7,6 +7,67 @@ from .utils import calculate_birthday_countdown
 from .models import Birthday
 from django.core.paginator import Paginator
 
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+from django.urls import reverse_lazy
+
+
+# Создаём миксин.
+class BirthdayMixin:
+    model = Birthday
+    form_class = BirthdayForm
+    template_name = 'birthday/birthday.html'
+    success_url = reverse_lazy('birthday:list')
+
+
+# Наследуем класс от встроенного ListView - Это CBV заменяет def birthday_list:
+class BirthdayListView(ListView):
+    # Указываем модель, с которой работает CBV...
+    model = Birthday
+    # ...сортировку, которая будет применена при выводе списка объектов:
+    ordering = 'id'
+    # ...и даже настройки пагинации:
+    paginate_by = 5
+
+
+# Добавляем миксин первым по списку родительских классов.
+class BirthdayCreateView(BirthdayMixin, CreateView):
+    # Не нужно описывать атрибуты: все они унаследованы от BirthdayMixin.
+    pass
+
+
+# Добавляем миксин первым по списку родительских классов.
+class BirthdayUpdateView(BirthdayMixin, UpdateView):
+    # И здесь все атрибуты наследуются от BirthdayMixin.
+    pass
+
+
+class BirthdayDeleteView(DeleteView):
+    model = Birthday
+    success_url = reverse_lazy('birthday:list')
+
+# Создан класс MIXIN.
+# class BirthdayCreateView(CreateView):
+    # Указываем модель, с которой работает CBV...
+    # model = Birthday
+    # Указываем имя формы:
+    # form_class = BirthdayForm
+    # Этот класс сам может создать форму на основе модели!
+    # Нет необходимости отдельно создавать форму через ModelForm.
+    # Указываем поля, которые должны быть в форме: Если нет явного указания какую используем.
+    # fields = '__all__'
+    # Явным образом указываем шаблон:
+    # template_name = 'birthday/birthday.html'
+    # Указываем namespace:name страницы, куда будет перенаправлен пользователь
+    # после создания объекта:
+    # success_url = reverse_lazy('birthday:list')
+
+
+# class BirthdayUpdateView(UpdateView):
+    # model = Birthday
+    # form_class = BirthdayForm
+    # template_name = 'birthday/birthday.html'
+    # success_url = reverse_lazy('birthday:list') 
+
 
 def delete_birthday(request, pk):
     # Получаем объект модели или выбрасываем 404 ошибку.
